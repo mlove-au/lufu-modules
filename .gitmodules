@@ -1,0 +1,9 @@
+[submodule "ni-media"]
+	path = ni-media
+	url = https://github.com/NativeInstruments/ni-media.git
+[submodule "third_party/kfr"]
+	path = third_party/kfr
+	url = https://github.com/mlove-au/kfr
+[submodule "third_party/AudioFile"]
+	path = third_party/AudioFile
+	url = https://github.com/adamstark/AudioFile.git
