@@ -3,7 +3,7 @@
 
 #include "MultiClock.hpp"
 #include "DeltaWave.hpp"
-#include "Samplah.hpp"
+#include "Repeater.hpp"
 
 rack::Plugin* plugin;
 
@@ -19,5 +19,5 @@ void init(rack::Plugin* p)
 
     p->addModel(rack::createModel<MulticlockModuleWidget>(SLUG, "Multiclock", "Multiclock", rack::UTILITY_TAG));
     p->addModel(rack::createModel<DeltaWaveWidget>(SLUG, "DeltaTrigger", "Delta Triger", rack::UTILITY_TAG));
-    p->addModel(rack::createModel<SamplahWidget>(SLUG, "Looper", "Looper", rack::SAMPLER_TAG));
+    p->addModel(rack::createModel<RepeaterWidget>(SLUG, "Looper", "Looper", rack::SAMPLER_TAG));
 }

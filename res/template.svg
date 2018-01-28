@@ -15,7 +15,7 @@
    version="1.1"
    id="svg8"
    inkscape:version="0.92.2 (5c3e80d, 2017-08-06)"
-   sodipodi:docname="MyModule.svg">
+   sodipodi:docname="template.svg">
   <defs
      id="defs2" />
   <sodipodi:namedview
@@ -26,7 +26,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.4"
-     inkscape:cx="165.62348"
+     inkscape:cx="26.694909"
      inkscape:cy="170.63765"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
@@ -116,5 +116,38 @@
          style="stroke-width:0.26458332"
          id="path849" />
     </g>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:condensed;font-size:2.82222223px;line-height:1.25;font-family:Comfortaa;-inkscape-font-specification:'Comfortaa weight=250 Condensed';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       x="0"
+       y="203.45088"
+       id="text836"><tspan
+         sodipodi:role="line"
+         id="tspan834"
+         x="0"
+         y="205.99301"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:condensed;font-family:Comfortaa;-inkscape-font-specification:'Comfortaa weight=250 Condensed';stroke-width:0.26458332" /></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:expanded;font-size:2.82222223px;line-height:1.25;font-family:Comfortaa;-inkscape-font-specification:'Comfortaa Bold Expanded';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       x="4.5357141"
+       y="214.03421"
+       id="text7597"><tspan
+         sodipodi:role="line"
+         id="tspan7595"
+         x="4.5357141"
+         y="216.57634"
+         style="font-size:4.93888903px;stroke-width:0.26458332" /></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:expanded;font-size:2.82222223px;line-height:1.25;font-family:Comfortaa;-inkscape-font-specification:'Comfortaa Bold Expanded';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       x="3.6345751"
+       y="205.92764"
+       id="text8232"><tspan
+         sodipodi:role="line"
+         id="tspan8230"
+         x="3.6345751"
+         y="205.92764"
+         style="font-size:4.93888903px;stroke-width:0.26458332">module </tspan></text>
   </g>
 </svg>

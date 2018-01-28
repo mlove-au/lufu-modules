@@ -76,7 +76,7 @@ MulticlockModuleWidget::MulticlockModuleWidget()
     {
         SVGPanel* panel = new SVGPanel();
         panel->box.size = box.size;
-        panel->setBackground(SVG::load(assetPlugin(plugin, "res/MyModule.svg")));
+        panel->setBackground(SVG::load(assetPlugin(plugin, "res/Clock.svg")));
         addChild(panel);
     }
 
@@ -86,11 +86,6 @@ MulticlockModuleWidget::MulticlockModuleWidget()
     addChild(createScrew<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 
     addChild(createParam<rack::NKK>(Vec(32, 48), module, MultiClockModule::ON_OFF_PARAM, 0.0, 1.0, 1.0));
-
-    auto* const title = new rack::Label;
-    title->box.pos = Vec(23, 20);
-    title->text = "Clock";
-    addChild(title);
 
     using BPMKnob = LabelledKnob<RoundBlackKnob>;
     auto bpm_knob = dynamic_cast<BPMKnob*>(createParam<BPMKnob>(Vec(28, 95), module, MultiClockModule::BPM_PARAM, 0.0, 500, 120.0));

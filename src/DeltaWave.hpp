@@ -96,7 +96,7 @@ struct DeltaWaveWidget : rack::ModuleWidget
 
     DeltaWaveWidget()
     {
-        font_ = Font::load(assetPlugin(plugin, "res/Hanken-Light.ttf"));
+        font_ = Font::load(assetPlugin(plugin, "res/IndieFlower.ttf"));
 
         DeltaWaveModule* module = new DeltaWaveModule();
         setModule(module);
@@ -104,7 +104,7 @@ struct DeltaWaveWidget : rack::ModuleWidget
 
         SVGPanel* panel = new SVGPanel();
         panel->box.size = box.size;
-        panel->setBackground(SVG::load(assetPlugin(plugin, "res/MyModule.svg")));
+        panel->setBackground(SVG::load(assetPlugin(plugin, "res/Delta.svg")));
         addChild(panel);
 
         addChild(createScrew<ScrewSilver>(Vec(RACK_GRID_WIDTH, 0)));
@@ -112,14 +112,7 @@ struct DeltaWaveWidget : rack::ModuleWidget
         addChild(createScrew<ScrewSilver>(Vec(RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
         addChild(createScrew<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 
-        CenteredLabel* const title = new CenteredLabel;
-        title->box.pos = Vec(23, 20);
-        title->text = "Δ Trigger";
-        //  title->setFont(font_);
-        addChild(title);
-
         addChild(createParam<rack::NKK>(Vec(32, 48), module, DeltaWaveModule::ON_OFF_PARAM, 0.0, 1.0, 1.0));
-
         addInput(createInput<PJ301MPort>(Vec(33, 163), module, DeltaWaveModule::INPUT_1));
         addOutput(createOutput<CL1362Port>(Vec(30, 253), module, DeltaWaveModule::CLOCK_OUTPUT));
     }
