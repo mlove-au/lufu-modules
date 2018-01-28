@@ -16,6 +16,8 @@ SOURCES += third_party/AudioFile/AudioFile.cpp
 # Must include the VCV plugin Makefile framework
 include ../../plugin.mk
 
+run:
+	make -C ../../ run
 # Convenience target for including files in the distributable release
 DIST_NAME = Multiclock
 .PHONY: dist
