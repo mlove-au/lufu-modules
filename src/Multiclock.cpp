@@ -103,9 +103,3 @@ MulticlockModuleWidget::MulticlockModuleWidget()
     addOutput(createOutput<CL1362Port>(Vec(30, 313), module, MultiClockModule::OCT_CLOCK_OUTPUT));
 }
 
-/*
-LabelledKnob::LabelledKnob()
-: rack::RoundBlackKnob()
-{
-}
-*/

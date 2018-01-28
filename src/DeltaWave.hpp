@@ -96,8 +96,6 @@ struct DeltaWaveWidget : rack::ModuleWidget
 
     DeltaWaveWidget()
     {
-        font_ = Font::load(assetPlugin(plugin, "res/IndieFlower.ttf"));
-
         DeltaWaveModule* module = new DeltaWaveModule();
         setModule(module);
         box.size = Vec(6 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT);

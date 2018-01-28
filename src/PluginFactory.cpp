@@ -18,6 +18,6 @@ void init(rack::Plugin* p)
  
 
     p->addModel(rack::createModel<MulticlockModuleWidget>(SLUG, "Multiclock", "Multiclock", rack::UTILITY_TAG));
-    p->addModel(rack::createModel<DeltaWaveWidget>(SLUG, "DeltaTrigger", "Delta Triger", rack::UTILITY_TAG));
-    p->addModel(rack::createModel<RepeaterWidget>(SLUG, "Looper", "Looper", rack::SAMPLER_TAG));
+    p->addModel(rack::createModel<DeltaWaveWidget>(SLUG, "Delta", "Delta", rack::UTILITY_TAG));
+    p->addModel(rack::createModel<RepeaterWidget>(SLUG, "Repeater", "Repeater", rack::SAMPLER_TAG));
 }
