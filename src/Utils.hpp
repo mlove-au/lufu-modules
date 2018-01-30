@@ -127,3 +127,4 @@ inline void set_all(ref_vec<T> & vec, T t)
         v = t;
     }
 }
+

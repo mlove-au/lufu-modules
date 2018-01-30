@@ -2,9 +2,8 @@
 #define CATCH_CONFIG_MAIN
 #include "catch.hpp"
 #include "ClockDSP.hpp"
-
-#include "Utils.hpp"
-
+#include "WavWriter.hpp"
+/*
 TEST_CASE("cyclic_iterator basics")
 {
 
@@ -30,4 +29,19 @@ TEST_CASE("cyclic_iterator basics")
 
     it += -0.00001;
     CHECK(*it == 10);
+}
+
+*/
+
+TEST_CASE("wavbasics")
+{
+    lufu::WavSink sink("tmp.wav", 44100);
+
+    float f = 0;
+    for (int i = 0; i < 2 * 44100; i++)
+    {
+        auto df = 2 * 3.1415927 / 441;
+        sink.push_samples(5.0 * sin(f),  2.0 * sin(f));
+        f += df;
+    }
 }

@@ -34,5 +34,5 @@ endif
 
 
 tests:
-	$(CXX) $(CXXFLAGS) $(FLAGS) src/tests.cxx -o unittests.exe 
+	$(CXX) $(CXXFLAGS) $(FLAGS) src/WavWriter.cpp src/tests.cxx -o unittests.exe 
 
