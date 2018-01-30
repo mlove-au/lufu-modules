@@ -38,10 +38,16 @@ TEST_CASE("wavbasics")
     lufu::WavSink sink("tmp.wav", 44100);
 
     float f = 0;
-    for (int i = 0; i < 2 * 44100; i++)
+    for (int j = 0; j < 15; j++)
     {
-        auto df = 2 * 3.1415927 / 441;
-        sink.push_samples(5.0 * sin(f),  2.0 * sin(f));
-        f += df;
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+
+        for (int i = 0; i < 44100; i++)
+        {
+            auto df = 2 * 3.1415927 / 441;
+            sink.push_samples(5.0 * sin(f), 2.0 * sin(2 * f));
+            f += df;
+            // std::this_thread::sleep_for(std::chrono::microseconds(230));
+        }
     }
 }

@@ -31,7 +31,7 @@ public:
         close();
     }
 
-    inline int16_t normalize(float sample)
+    inline int16_t normalize_and_clip(float sample)
     {
         int32_t s = (sample / 5.0) * 32768;
         if (s >= 32767)
@@ -49,11 +49,10 @@ public:
     void write(const WavBuffer & buffer)
     {
         data_chunk_size_ += buffer.size() * 2 * sizeof(uint16_t);
-        std::cerr << "Writing " << data_chunk_size_;
         for (const auto & sample : buffer)
         {
-            write(out_, normalize(sample.first));
-            write(out_, normalize(sample.second));
+            write(out_, normalize_and_clip(sample.first));
+            write(out_, normalize_and_clip(sample.second));
         }
     }
 
@@ -64,7 +63,8 @@ private:
         out.write(reinterpret_cast<const char *>(&that), sizeof(T));
     }
 
-    inline uint32_t big_endian(uint32_t source)
+    // constexpr me.
+     uint32_t big_endian(uint32_t source)
     {
         auto s = reinterpret_cast<uint8_t*>(&source);
         return uint32_t(s[0] << 24 | s[1] << 16 | s[2] << 8 | s[3]);
@@ -77,10 +77,11 @@ private:
 
     void write_header(uint16_t channels, uint32_t sample_rate)
     {
-        // FIX Endianess.
+        // a few magic numbers, just the character representation
+        // packed into 32 bits (host order).
         constexpr uint32_t RIFF = 0x52494646;
         constexpr uint32_t WAVE = 0x57415645;
-        constexpr uint32_t FMT = 0x666d7420;
+        constexpr uint32_t FMT  = 0x666d7420;
         constexpr uint32_t DATA = 0x64617461;
 
         // RIFF CHUNK
@@ -108,12 +109,8 @@ private:
     void apply_fixups()
     {
         out_.seekp(data_chunk_size_position_);
-        std::cerr << "Writing data size of " << data_chunk_size_;
         write(out_, little_endian(data_chunk_size_));
-
         out_.seekp(overall_size_position_);
-
-        std::cerr << "Overall size = " << data_chunk_size_ + 36;
         write(out_, little_endian(data_chunk_size_ + 36));
     }
 
@@ -132,6 +129,10 @@ WavSink::WavSink(std::string filename, int sample_rate)
 {
     input_buffer_.reserve(2 * sample_rate);
     write_buffer_.reserve(2 * sample_rate);
+    writer_thread_ = std::thread([this]()
+    {
+        writer_loop();
+    });
 }
 
 WavSink::~WavSink()
@@ -169,14 +170,15 @@ void WavSink::writer_loop()
 {
     while (running_)
     {
-        std::this_thread::sleep_for(std::chrono::seconds(1));
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
         {
             std::lock_guard<std::mutex> lock(buffer_mutex_);
             std::swap(input_buffer_, write_buffer_);
             input_buffer_.clear();
         }
+        
         if (!write_buffer_.empty())
-        {
+        {    
             destination_->write(write_buffer_);
             write_buffer_.clear();
         }
@@ -190,6 +192,7 @@ void WavSink::flush()
         destination_->write(input_buffer_);
         input_buffer_.clear();
     }
-    }
+}
+
 }
 
