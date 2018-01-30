@@ -1,7 +1,7 @@
 #include <plugin.hpp>
 #include <rack.hpp>
 
-#include "MultiClock.hpp"
+#include "Multiclock.hpp"
 #include "DeltaWave.hpp"
 #include "Repeater.hpp"
 
