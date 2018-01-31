@@ -105,7 +105,7 @@ namespace lufu
 
         open_file->box.pos = Vec(40, 98);
         addChild(open_file);
-        addChild(createLabel<Label>(Vec(23, 65), "File"));
+        addChild(createLabel<Label>(Vec(23, 115), "File"));
 
 
 
