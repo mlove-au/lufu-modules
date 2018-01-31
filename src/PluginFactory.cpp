@@ -21,7 +21,7 @@ void init(rack::Plugin* p)
 #endif
  
 
-    p->addModel(rack::createModel<lufu::MulticlockModuleWidget>(SLUG, "Multiclock", "Multiclock", rack::UTILITY_TAG));
+    p->addModel(rack::createModel<lufu::MultiClockModuleWidget>(SLUG, "Multiclock", "Multiclock", rack::UTILITY_TAG));
     p->addModel(rack::createModel<lufu::DeltaWaveWidget>(SLUG, "Delta", "Delta", rack::UTILITY_TAG));
     p->addModel(rack::createModel<lufu::RepeaterWidget>(SLUG, "Repeater", "Repeater", rack::SAMPLER_TAG));
     p->addModel(rack::createModel<lufu::RecorderWidget>(SLUG, "Recorder", "Recorder", rack::SAMPLER_TAG));

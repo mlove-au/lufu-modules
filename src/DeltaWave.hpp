@@ -2,6 +2,7 @@
 #include "rack.hpp"
 #include <dsp/digital.hpp>
 #include <iostream>
+#include "Utils.hpp"
 
 using namespace rack;
 
@@ -91,29 +92,14 @@ namespace lufu
         }
     };
 
-    struct DeltaWaveWidget : rack::ModuleWidget
+    struct DeltaWaveWidget : lufu::BaseModuleWidget<DeltaWaveModule>
     {
-        
         DeltaWaveWidget()
-        {
-            extern rack::Plugin * plugin;
-            DeltaWaveModule* module = new DeltaWaveModule();
-            setModule(module);
-            box.size = Vec(6 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT);
-
-            SVGPanel* panel = new SVGPanel();
-            panel->box.size = box.size;
-            panel->setBackground(SVG::load(assetPlugin(plugin, "res/Delta.svg")));
-            addChild(panel);
-
-            addChild(createScrew<ScrewSilver>(Vec(RACK_GRID_WIDTH, 0)));
-            addChild(createScrew<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, 0)));
-            addChild(createScrew<ScrewSilver>(Vec(RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
-            addChild(createScrew<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
-
-            addChild(createParam<rack::NKK>(Vec(32, 48), module, DeltaWaveModule::ON_OFF_PARAM, 0.0, 1.0, 1.0));
-            addInput(createInput<PJ301MPort>(Vec(33, 163), module, DeltaWaveModule::INPUT_1));
-            addOutput(createOutput<CL1362Port>(Vec(30, 253), module, DeltaWaveModule::CLOCK_OUTPUT));
+            : BaseModuleWidget("res/Delta.svg")
+        {     
+            addChild(createParam<rack::NKK>(Vec(32, 48), module_, DeltaWaveModule::ON_OFF_PARAM, 0.0, 1.0, 1.0));
+            addInput(createInput<PJ301MPort>(Vec(33, 163), module_, DeltaWaveModule::INPUT_1));
+            addOutput(createOutput<CL1362Port>(Vec(30, 253), module_, DeltaWaveModule::CLOCK_OUTPUT));
         }
     };
 

@@ -8,7 +8,7 @@ TEST_CASE("continuous_iterator basics")
 {
 
     std::vector<int> v{ 1,2,3,4,5,6,7,8,9,10 };
-    continuous_iterator<std::vector<int>> it(v);
+    continuous  _iterator<std::vector<int>> it(v);
 
     CHECK(*it == 1);
 

@@ -8,7 +8,6 @@ using namespace rack;
 
 namespace lufu
 {
-
     class OpenFileButton : public rack::SVGSwitch, rack::MomentarySwitch
     {
     public:

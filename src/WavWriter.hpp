@@ -1,4 +1,3 @@
-
 #pragma once
 
 #include <cstdint>
@@ -14,7 +13,7 @@ namespace lufu
 {
     class WavWriter;
 
-    using  WavBuffer = std::vector<std::pair<float, float>>;;
+    using WavBuffer = std::vector<std::pair<float, float>>;;
 
     class WavSink
     {

@@ -1,11 +1,14 @@
 #pragma once
 
 #include "rack.hpp"
+#include "Utils.hpp"
 
 namespace lufu
 {
-    struct RecorderWidget : rack::ModuleWidget
+    class RecorderModule;
+    class RecorderWidget : public lufu::BaseModuleWidget<RecorderModule>
     {
+    public:
         RecorderWidget();
     };
 }

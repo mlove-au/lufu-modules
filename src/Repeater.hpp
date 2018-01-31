@@ -140,39 +140,26 @@ namespace lufu
     extern rack::Plugin* plugin;
 
 
-    struct RepeaterWidget : rack::ModuleWidget
+    struct RepeaterWidget : public lufu::BaseModuleWidget<Repeater>
     {
 
         RepeaterWidget()
+            : BaseModuleWidget("res/Repeater.svg")
         {
-            auto module = new Repeater();
-            setModule(module);
-            box.size = Vec(6 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT);
 
-            auto panel = new SVGPanel();
-            panel->setBackground(SVG::load(assetPlugin(plugin, "res/Repeater.svg")));
-            addChild(panel);
-
-            addChild(createScrew<ScrewSilver>(Vec(RACK_GRID_WIDTH, 0)));
-            addChild(createScrew<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, 0)));
-            addChild(createScrew<ScrewSilver>(Vec(RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
-            addChild(createScrew<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
-
-            addChild(createParam<rack::NKK>(Vec(32, 48), module, Repeater::ON_OFF_PARAM, 0.0, 1.0, 1.0));
+            addChild(createParam<rack::NKK>(Vec(32, 48), module_, Repeater::ON_OFF_PARAM, 0.0, 1.0, 1.0));
 
             auto open_file = new OpenFileButton(
-                [module](const std::string& path)
+                [this](const std::string& path)
             {
-                module->load_sample(path);
+                this->module_->load_sample(path);
             });
             open_file->box.pos = Vec(40, 98);
             addChild(open_file);
-            addChild(createLabel<CenteredLabel>(Vec(23, 65), "Open File"));
-
-
+            
             using SpeedKnob = LabelledKnob<rack::RoundBlackKnob>;
 
-            auto playback_speed = dynamic_cast<SpeedKnob*>(createParam<SpeedKnob>(Vec(28, 140), module, Repeater::SPEED_PARAM, -2.0, 2.0, 1.0));
+            auto playback_speed = dynamic_cast<SpeedKnob*>(createParam<SpeedKnob>(Vec(28, 140), module_, Repeater::SPEED_PARAM, -2.0, 2.0, 1.0));
             addParam(playback_speed);
 
             auto l = createLabel<Label>(Vec(3, 180), "Speed");
@@ -180,17 +167,17 @@ namespace lufu
             playback_speed->setLabel(l, [](float v) { return std::string("Speed " + to_string_with_precision(v, 3)); });
 
 
-            addInput(createInput<PJ301MPort>(Vec(15, 203), module, Repeater::SPEED_CV_AMOUNT));
-            addParam(createParam<ReallySmallBlackKnob>(Vec(52, 205), module, Repeater::SPEED_CV_DEPTH, 0.0, 1.0, 1.0));
+            addInput(createInput<PJ301MPort>(Vec(15, 203), module_, Repeater::SPEED_CV_AMOUNT));
+            addParam(createParam<ReallySmallBlackKnob>(Vec(52, 205), module_, Repeater::SPEED_CV_DEPTH, 0.0, 1.0, 1.0));
             addChild(createLabel(Vec(7, 228), "Speed Mod"));
 
-            addInput(createInput<PJ301MPort>(Vec(33, 260), module, Repeater::RESTART_TRIGGER));
+            addInput(createInput<PJ301MPort>(Vec(33, 260), module_, Repeater::RESTART_TRIGGER));
             addChild(createLabel(Vec(24, 285), "Sync"));
 
-            addOutput(createOutput<CL1362Port>(Vec(10, 310), module, Repeater::AUDIO_OUTPUT_L));
+            addOutput(createOutput<CL1362Port>(Vec(10, 310), module_, Repeater::AUDIO_OUTPUT_L));
 
 
-            addOutput(createOutput<CL1362Port>(Vec(50, 310), module, Repeater::AUDIO_OUTPUT_R));
+            addOutput(createOutput<CL1362Port>(Vec(50, 310), module_, Repeater::AUDIO_OUTPUT_R));
 
         }
     };

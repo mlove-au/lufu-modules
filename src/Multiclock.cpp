@@ -69,26 +69,9 @@ namespace lufu
         }
     }
 
-    MulticlockModuleWidget::MulticlockModuleWidget()
+    MultiClockModuleWidget::MultiClockModuleWidget()
+        : BaseModuleWidget("res/Clock.svg")
     {
-        extern rack::Plugin * plugin;
-
-        MultiClockModule* module = new MultiClockModule();
-        setModule(module);
-        box.size = Vec(6 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT);
-
-        {
-            SVGPanel* panel = new SVGPanel();
-            panel->box.size = box.size;
-            panel->setBackground(SVG::load(assetPlugin(plugin, "res/Clock.svg")));
-            addChild(panel);
-        }
-
-        addChild(createScrew<ScrewSilver>(Vec(RACK_GRID_WIDTH, 0)));
-        addChild(createScrew<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, 0)));
-        addChild(createScrew<ScrewSilver>(Vec(RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
-        addChild(createScrew<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
-
         addChild(createParam<rack::NKK>(Vec(32, 48), module, MultiClockModule::ON_OFF_PARAM, 0.0, 1.0, 1.0));
 
         using BPMKnob = LabelledKnob<RoundBlackKnob>;
