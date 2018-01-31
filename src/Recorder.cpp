@@ -4,6 +4,7 @@
 #include "OpenFileButton.hpp"
 #include "Utils.hpp"
 #include <iostream>
+#include "dsp/vumeter.hpp"
 
 namespace lufu
 {
@@ -29,8 +30,14 @@ namespace lufu
             NUM_OUTPUTS
         };
 
+        static constexpr int VU_METER_LIGHTS = 16;
+
         enum LightIds
         {
+            VU_METER_LEFT_1,
+            VU_METER_LEFT_END = VU_METER_LEFT_1 + VU_METER_LIGHTS,
+            VU_METER_RIGHT_1,
+            VU_METER_RIGHT_END = VU_METER_RIGHT_1 + VU_METER_LIGHTS,
             NUM_LIGHTS
         };
 
@@ -38,6 +45,7 @@ namespace lufu
         RecorderModule()
             : rack::Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS)
         {
+            meter_.dBInterval = 3;
         }
 
         void on_set_target_file(std::string path)
@@ -59,17 +67,33 @@ namespace lufu
                 sink_.reset();
             }
 
+            float left = inputs[INPUT_L].active ? inputs[INPUT_L].value : 0.0;
+            float right = inputs[INPUT_R].active ? inputs[INPUT_R].value : 0.0;
+
             if (sink_)
             {
-                float left = inputs[INPUT_L].active ? inputs[INPUT_L].value : 0.0;
-                float right = inputs[INPUT_R].active ? inputs[INPUT_R].value : 0.0;
                 sink_->push_samples(left, right);
             }
+               
+            meter_.setValue(left / 5.0);
+            for (int l = 0; l < VU_METER_LIGHTS; l++)
+            {
+                lights[l + VU_METER_LEFT_1].setBrightnessSmooth(meter_.getBrightness(VU_METER_LIGHTS - l));                            
+            }
+
+
+            meter_.setValue(right / 5.0);
+            for (int l = 0; l < VU_METER_LIGHTS; l++)
+            {
+                lights[l + VU_METER_RIGHT_1].setBrightnessSmooth(meter_.getBrightness(VU_METER_LIGHTS - l));
+            }
+
+            
         }
-        
     private:
         std::string target_file_;
         std::unique_ptr<lufu::WavSink> sink_;
+        rack::VUMeter meter_;
     };
 
     
@@ -80,10 +104,6 @@ namespace lufu
         auto width = that.box.size.x / 2;
 
         that.box.pos.x = center - width;
-
-        std::cerr << "Other center = " << center << "\n";
-        std::cerr << "Width = " << width << "\n";
-        std::cerr << "x Set to " << that.box.pos.x << "\n";
     }
 
     RecorderWidget::RecorderWidget()
@@ -101,7 +121,7 @@ namespace lufu
             panel->setBackground(rack::SVG::load(assetPlugin(plugin, "res/Recorder.svg")));
             addChild(panel);
         }
-        
+
         addChild(createScrew<ScrewSilver>(Vec(RACK_GRID_WIDTH, 0)));
         addChild(createScrew<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, 0)));
         addChild(createScrew<ScrewSilver>(Vec(RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
@@ -118,7 +138,7 @@ namespace lufu
             module->on_set_target_file(path);
         }, OSDIALOG_SAVE);
 
-        open_file->box.pos = Vec(40, 90);
+        open_file->box.pos = Vec(40, 96);
 
         center_horiz(*this, *open_file);
         addChild(open_file);
@@ -126,22 +146,45 @@ namespace lufu
         addInput(createInput<PJ301MPort>(Vec(10, 310), module, RecorderModule::INPUT_L));
         addInput(createInput<PJ301MPort>(Vec(50, 310), module, RecorderModule::INPUT_R));
 
-        /*
-        addChild(createParam<rack::NKK>(Vec(32, 48), module, MultiClockModule::ON_OFF_PARAM, 0.0, 1.0, 1.0));
 
-        using BPMKnob = LabelledKnob<RoundBlackKnob>;
-        auto bpm_knob = dynamic_cast<BPMKnob*>(createParam<BPMKnob>(Vec(28, 95), module, MultiClockModule::BPM_PARAM, 0.0, 500, 120.0));
-        addParam(bpm_knob);
+        for (int i = 0; i < RecorderModule::VU_METER_LIGHTS; i++)
+        {
+            if (i < 10)
+            {
+                std::cerr << 290 - i * 10 << "\n";
+                auto left = createLight<rack::GreenLight>(Vec(16, 290 - (i * 10)), module, RecorderModule::VU_METER_LEFT_1 + i);
+                left->box.size = Vec(8, 8);
+                addChild(left);
+ 
+                auto right = createLight<rack::GreenLight>(Vec(56, 290 - (i * 10)), module, RecorderModule::VU_METER_RIGHT_1 + i);
+                right->box.size = Vec(8, 8);
+                addChild(right);
+            }
 
-        auto* const bpmLabel = new rack::Label;
-        bpmLabel->box.pos = Vec(20, 136);
-        bpmLabel->text = "";
-        bpm_knob->setLabel(bpmLabel, [](float v) { return std::to_string(int(v)) + " BPM"; });
-        addChild(bpmLabel);
+            if (i >= 10 && i < 14)
+            {
+                std::cerr << 290 - i * 10 << "\n";
+                auto left = createLight<rack::YellowLight>(Vec(16, 290 - (i * 10)), module, RecorderModule::VU_METER_LEFT_1 + i);
+                left->box.size = Vec(8, 8);
+                addChild(left);
 
-        addOutput(createOutput<CL1362Port>(Vec(30, 163), module, MultiClockModule::CLOCK_OUTPUT));
-        addOutput(createOutput<CL1362Port>(Vec(30, 213), module, MultiClockModule::DOUBLE_CLOCK_OUTPUT));
-        */
-    };
+                auto right = createLight<rack::YellowLight>(Vec(56, 290 - (i * 10)), module, RecorderModule::VU_METER_RIGHT_1 + i);
+                right->box.size = Vec(8, 8);
+                addChild(right);
+            }
+
+            if (i >= 14)
+            {
+                std::cerr << 290 - i * 10 << "\n";
+                auto left = createLight<rack::RedLight>(Vec(16, 290 - (i * 10)), module, RecorderModule::VU_METER_LEFT_1 + i);
+                left->box.size = Vec(8, 8);
+                addChild(left);
+
+                auto right = createLight<rack::RedLight>(Vec(56, 290 - (i * 10)), module, RecorderModule::VU_METER_RIGHT_1 + i);
+                right->box.size = Vec(8, 8);
+                addChild(right);
+            }
+        }
+    }
 }
 
