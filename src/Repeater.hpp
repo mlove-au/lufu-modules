@@ -13,6 +13,8 @@
 #include <stdio.h>
 #include <thread>
 
+#include "lufu/continuous_iterator.hpp"
+
 using namespace rack;
 
 namespace lufu
@@ -71,8 +73,8 @@ namespace lufu
         std::vector<std::vector<float>> samples_;
         std::mutex mutex_;
         bool running = false;
-        cyclic_iterator<std::vector<float>> left_;
-        cyclic_iterator<std::vector<float>> right_;
+        continuous_iterator<std::vector<float>> left_;
+        continuous_iterator<std::vector<float>> right_;
         std::string filename_;
 
 
@@ -125,10 +127,10 @@ namespace lufu
             right_.reset();
             if (samples_.size() >= 1)
             {
-                left_ = cyclic_iterator<std::vector<float>>(samples_[0]);
+                left_ = continuous_iterator<std::vector<float>>(samples_[0]);
                 if (samples_.size() >= 2)
                 {
-                    right_ = cyclic_iterator<std::vector<float>>(samples_[1]);
+                    right_ = continuous_iterator<std::vector<float>>(samples_[1]);
                 }
             }
             filename_ = path;

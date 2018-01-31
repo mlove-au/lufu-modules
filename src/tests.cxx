@@ -4,11 +4,11 @@
 #include "ClockDSP.hpp"
 #include "WavWriter.hpp"
 /*
-TEST_CASE("cyclic_iterator basics")
+TEST_CASE("continuous_iterator basics")
 {
 
     std::vector<int> v{ 1,2,3,4,5,6,7,8,9,10 };
-    cyclic_iterator<std::vector<int>> it(v);
+    continuous_iterator<std::vector<int>> it(v);
 
     CHECK(*it == 1);
 
