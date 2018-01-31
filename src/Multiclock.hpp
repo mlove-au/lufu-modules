@@ -2,7 +2,8 @@
 #include "rack.hpp"
 #include <iostream>
 
-extern rack::Plugin* plugin;
+namespace lufu
+{
 
 struct MulticlockModuleWidget : rack::ModuleWidget
 {
@@ -39,3 +40,4 @@ struct CenteredLabel : rack::Widget
     }
 };
 
+}

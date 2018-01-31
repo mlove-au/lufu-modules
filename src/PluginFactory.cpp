@@ -4,20 +4,25 @@
 #include "Multiclock.hpp"
 #include "DeltaWave.hpp"
 #include "Repeater.hpp"
+#include "Recorder.hpp"
 
-rack::Plugin* plugin;
+namespace lufu
+{
+    rack::Plugin* plugin;
+}
 
 void init(rack::Plugin* p)
 {
     const std::string SLUG("lufu");
-    plugin = p;
+    lufu::plugin = p;
     p->slug = SLUG;
 #ifdef VERSION
     p->version = TOSTRING(VERSION);
 #endif
  
 
-    p->addModel(rack::createModel<MulticlockModuleWidget>(SLUG, "Multiclock", "Multiclock", rack::UTILITY_TAG));
-    p->addModel(rack::createModel<DeltaWaveWidget>(SLUG, "Delta", "Delta", rack::UTILITY_TAG));
-    p->addModel(rack::createModel<RepeaterWidget>(SLUG, "Repeater", "Repeater", rack::SAMPLER_TAG));
+    p->addModel(rack::createModel<lufu::MulticlockModuleWidget>(SLUG, "Multiclock", "Multiclock", rack::UTILITY_TAG));
+    p->addModel(rack::createModel<lufu::DeltaWaveWidget>(SLUG, "Delta", "Delta", rack::UTILITY_TAG));
+    p->addModel(rack::createModel<lufu::RepeaterWidget>(SLUG, "Repeater", "Repeater", rack::SAMPLER_TAG));
+    p->addModel(rack::createModel<lufu::RecorderWidget>(SLUG, "Recorder", "Recorder", rack::SAMPLER_TAG));
 }
