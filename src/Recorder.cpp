@@ -7,6 +7,7 @@
 
 namespace lufu
 {
+
     class RecorderModule : public rack::Module
     {
     public:
@@ -71,7 +72,19 @@ namespace lufu
         std::unique_ptr<lufu::WavSink> sink_;
     };
 
+    
+    // Adjust position so that is centered horizontally in outer
+    void center_horiz(const rack::Widget& other, rack::Widget & that)
+    {
+        auto center = other.box.size.x / 2;
+        auto width = that.box.size.x / 2;
 
+        that.box.pos.x = center - width;
+
+        std::cerr << "Other center = " << center << "\n";
+        std::cerr << "Width = " << width << "\n";
+        std::cerr << "x Set to " << that.box.pos.x << "\n";
+    }
 
     RecorderWidget::RecorderWidget()
     {
@@ -96,18 +109,19 @@ namespace lufu
 
 
         // should be a button, red LED, swquare.
-        addChild(createParam<rack::NKK>(Vec(32, 48), module, RecorderModule::RECORD_STOP_BUTTON, 0.0, 1.0, 1.0));
+        auto rec = createParam<rack::NKK>(Vec(32, 48), module, RecorderModule::RECORD_STOP_BUTTON, 0.0, 1.0, 1.0);
+        center_horiz(*this, *rec);
+        addParam(rec);
 
         auto open_file = new OpenFileButton([module](const std::string& path)
         {
             module->on_set_target_file(path);
         }, OSDIALOG_SAVE);
 
-        open_file->box.pos = Vec(40, 98);
+        open_file->box.pos = Vec(40, 90);
+
+        center_horiz(*this, *open_file);
         addChild(open_file);
-        addChild(createLabel<Label>(Vec(23, 115), "File"));
-
-
 
         addInput(createInput<PJ301MPort>(Vec(10, 310), module, RecorderModule::INPUT_L));
         addInput(createInput<PJ301MPort>(Vec(50, 310), module, RecorderModule::INPUT_R));
