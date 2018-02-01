@@ -105,23 +105,21 @@ namespace lufu
             if (!sink_)
             {
                 sink_ = std::unique_ptr<WavSink>(new WavSink(target_file_, 44100));
-                start_time_ = std::chrono::system_clock::now();
+                seconds = 0;
             }
 
             sink_->push_samples(left, right);
 
             if (ticks_ % 44100 == 0)
             {
-                const auto now = std::chrono::system_clock::now();
-                const auto d = std::chrono::duration_cast<std::chrono::seconds>(now - start_time_).count();
-
                 char time_str_[9];
-                const int sec = d % 60;
-                const int min =  (d / 60) % 60;
-                const int hour = (d / (60 * 60)) % 24;
+                const int sec = seconds % 60;
+                const int min =  (seconds / 60) % 60;
+                const int hour = (seconds / (60 * 60)) % 24;
                 sprintf(time_str_, "%02d:%02d:%02d", hour, min, sec);
                 recording_time_.assign(time_str_);
                 recording_time_label_->text = recording_time_;
+                seconds++;
             }
             ticks_++;
         }
@@ -131,6 +129,7 @@ namespace lufu
         std::chrono::time_point<std::chrono::system_clock> start_time_;
         rack::Label * recording_time_label_{nullptr};
         uint64_t ticks_{0};
+        uint32_t seconds;
         std::string target_file_;
         std::unique_ptr<lufu::WavSink> sink_;
         rack::VUMeter meter_;
