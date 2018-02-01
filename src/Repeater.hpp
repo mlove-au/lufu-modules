@@ -82,6 +82,8 @@ namespace lufu
         {
             if (params[ON_OFF_PARAM].value == 0.0)
             {
+                outputs[AUDIO_OUTPUT_L].value = 0.0;
+                outputs[AUDIO_OUTPUT_R].value = 0.0;
                 return;
             }
 
