@@ -100,12 +100,10 @@ namespace lufu
                     const int hour = (d / (60 * 60)) % 24; 
                     sprintf(time_str_, "%02d:%02d:%02d", hour, min, sec);
                     recording_time_.assign(time_str_);
-                    std::cout << recording_time_ << "\n";
                     recording_time_label_->text = recording_time_;
                 }
                 ticks_++;
             }
-
             meter_.setValue(left / 5.0);
             for (int l = 0; l < VU_METER_LIGHTS; l++)
             {
@@ -117,7 +115,6 @@ namespace lufu
             {
                 lights[l + VU_METER_RIGHT_1].setBrightnessSmooth(meter_.getBrightness(VU_METER_LIGHTS - l));
             }            
-
         }
 
     private:
