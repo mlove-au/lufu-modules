@@ -10,41 +10,44 @@ using namespace rack;
 namespace lufu
 {
 
-    struct MultiClockModule : Module
+    class MultiClockModule : public rack::Module
     {
-        enum ParamIds
-        {
-            BPM_PARAM,
-            ON_OFF_PARAM,
-            NUM_PARAMS
-        };
-        enum InputIds
-        {
-            NUM_INPUTS
-        };
+        public:
+            enum ParamIds
+            {
+                BPM_PARAM,
+                ON_OFF_PARAM,
+                NUM_PARAMS
+            };
+            enum InputIds
+            {
+                NUM_INPUTS
+            };
 
-        enum OutputIds
-        {
-            CLOCK_OUTPUT,
-            DOUBLE_CLOCK_OUTPUT,
-            QUAD_CLOCK_OUTPUT,
-            OCT_CLOCK_OUTPUT,
-            NUM_OUTPUTS
-        };
+            enum OutputIds
+            {
+                CLOCK_OUTPUT,
+                DOUBLE_CLOCK_OUTPUT,
+                QUAD_CLOCK_OUTPUT,
+                OCT_CLOCK_OUTPUT,
+                ON_START_OUTPUT,
+                NUM_OUTPUTS
+            };
 
-        enum LightIds
-        {
-            NUM_LIGHTS
-        };
+            enum LightIds
+            {
+                NUM_LIGHTS
+            };
 
-        MultiClockModule()
-            : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS)
-        {
-        }
+            MultiClockModule()
+                : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS)
+            {
+            }
 
-        void step() override;
-
-        MultiClock<4> clock_;
+            void step() override;
+            rack::PulseGenerator start_pulse_;
+            bool running_;
+            MultiClock<4> clock_;
     };
 
     void MultiClockModule::step()
@@ -55,6 +58,13 @@ namespace lufu
         clock_.tick(deltaTime);
         if (params[ON_OFF_PARAM].value >= 1.0)
         {
+            if (!running_)
+            {
+                running_ = true;
+                start_pulse_.trigger(1e-3);
+            }
+
+            outputs[ON_START_OUTPUT].value = start_pulse_.process(deltaTime) ? 10.0f : 0.0f;
             outputs[CLOCK_OUTPUT].value = clock_.output<0>();
             outputs[DOUBLE_CLOCK_OUTPUT].value = clock_.output<1>();
             outputs[QUAD_CLOCK_OUTPUT].value = clock_.output<2>();
@@ -62,10 +72,12 @@ namespace lufu
         }
         else
         {
-            outputs[CLOCK_OUTPUT].value = 0.0;
-            outputs[DOUBLE_CLOCK_OUTPUT].value = 0.0;
-            outputs[QUAD_CLOCK_OUTPUT].value = 0.0;
-            outputs[OCT_CLOCK_OUTPUT].value = 0.0;
+            running_ = false;
+            outputs[ON_START_OUTPUT].value = 0.0f;
+            outputs[CLOCK_OUTPUT].value = 0.0f;
+            outputs[DOUBLE_CLOCK_OUTPUT].value = 0.0f;
+            outputs[QUAD_CLOCK_OUTPUT].value = 0.0f;
+            outputs[OCT_CLOCK_OUTPUT].value = 0.0f;
         }
     }
 
@@ -84,10 +96,11 @@ namespace lufu
         bpm_knob->setLabel(bpmLabel, [](float v) { return std::to_string(int(v)) + " BPM"; });
         addChild(bpmLabel);
 
-        addOutput(createOutput<CL1362Port>(Vec(30, 163), module, MultiClockModule::CLOCK_OUTPUT));
-        addOutput(createOutput<CL1362Port>(Vec(30, 213), module, MultiClockModule::DOUBLE_CLOCK_OUTPUT));
-        addOutput(createOutput<CL1362Port>(Vec(30, 263), module, MultiClockModule::QUAD_CLOCK_OUTPUT));
-        addOutput(createOutput<CL1362Port>(Vec(30, 313), module, MultiClockModule::OCT_CLOCK_OUTPUT));
+        addOutput(createOutput<CL1362Port>(Vec(30, 158), module, MultiClockModule::ON_START_OUTPUT));
+        addOutput(createOutput<CL1362Port>(Vec(30, 200), module, MultiClockModule::CLOCK_OUTPUT));
+        addOutput(createOutput<CL1362Port>(Vec(30, 235), module, MultiClockModule::DOUBLE_CLOCK_OUTPUT));
+        addOutput(createOutput<CL1362Port>(Vec(30, 270), module, MultiClockModule::QUAD_CLOCK_OUTPUT));
+        addOutput(createOutput<CL1362Port>(Vec(30, 305), module, MultiClockModule::OCT_CLOCK_OUTPUT));
     }
 
 }
