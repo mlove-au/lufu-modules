@@ -86,13 +86,37 @@ namespace lufu
             }
         }
 
+        bool is_recording() const
+        {
+            return sink_ != nullptr;
+        }
+
+        void update_recording_time()
+        { 
+            if (!is_recording())    
+            {
+                recording_time_label_->text = "00:00:00";
+            }
+            else if (ticks_ % 44100 == 0)
+            {
+                char time_str_[9];
+                const int sec = recording_seconds_ % 60;
+                const int min =  (recording_seconds_ / 60) % 60;
+                const int hour = (recording_seconds_ / (60 * 60)) % 24;
+                sprintf(time_str_, "%02d:%02d:%02d", hour, min, sec);
+                recording_time_label_->text.assign(time_str_);
+                recording_seconds_++;
+            }
+        }
+
         void step() override
         {
             float left = inputs[INPUT_L].active ? inputs[INPUT_L].value : 0.0;
             float right = inputs[INPUT_R].active ? inputs[INPUT_R].value : 0.0;
 
             vu_lights(left, right);
-
+            update_recording_time();
+            // Switched off.
             if (target_file_.empty() || !params[RECORD_STOP_BUTTON].value)
             {
                 if (sink_)
@@ -101,35 +125,21 @@ namespace lufu
                 }
                 return;
             }
-
+            
             if (!sink_)
             {
                 sink_ = std::unique_ptr<WavSink>(new WavSink(target_file_, 44100));
-                seconds = 0;
+                recording_seconds_ = 0;
             }
 
             sink_->push_samples(left, right);
-
-            if (ticks_ % 44100 == 0)
-            {
-                char time_str_[9];
-                const int sec = seconds % 60;
-                const int min =  (seconds / 60) % 60;
-                const int hour = (seconds / (60 * 60)) % 24;
-                sprintf(time_str_, "%02d:%02d:%02d", hour, min, sec);
-                recording_time_.assign(time_str_);
-                recording_time_label_->text = recording_time_;
-                seconds++;
-            }
             ticks_++;
         }
 
     private:
-        std::string recording_time_{"00:00:00"};
-        std::chrono::time_point<std::chrono::system_clock> start_time_;
         rack::Label * recording_time_label_{nullptr};
         uint64_t ticks_{0};
-        uint32_t seconds;
+        uint32_t recording_seconds_{0};
         std::string target_file_;
         std::unique_ptr<lufu::WavSink> sink_;
         rack::VUMeter meter_;
