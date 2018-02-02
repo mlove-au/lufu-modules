@@ -74,13 +74,15 @@ namespace lufu
 
         void update_vu_lights(float left, float right)
         {
-            meter_left_.setValue(left / 5.0);
-            meter_right_.setValue(right / 5.0);
-
-            for (int l = 0; l < VU_METER_LIGHTS; l++)
             {
-                lights[l + VU_METER_LEFT_1].setBrightnessSmooth(meter_left_.getBrightness(VU_METER_LIGHTS - l));
-                lights[l + VU_METER_RIGHT_1].setBrightnessSmooth(meter_right_.getBrightness(VU_METER_LIGHTS - l));
+                meter_left_.setValue(left / 5.0);
+                meter_right_.setValue(right / 5.0);
+
+                for (int l = 0; l < VU_METER_LIGHTS; l++)
+                {
+                    lights[l + VU_METER_LEFT_1].setBrightnessSmooth(meter_left_.getBrightness(VU_METER_LIGHTS - l));
+                    lights[l + VU_METER_RIGHT_1].setBrightnessSmooth(meter_right_.getBrightness(VU_METER_LIGHTS - l));
+                }
             }
         }
 
@@ -134,15 +136,13 @@ namespace lufu
                 sink_ = std::unique_ptr<WavSink>(new WavSink(target_file_, 44100));
                 recording_seconds_ = 0;
             }
-
             sink_->push_samples(left, right);
-            
         }
 
     private:
         rack::Label * recording_time_label_{nullptr};
         uint64_t ticks_{0};
-        uint32_t recording_seconds_{0};
+        uint64_t recording_seconds_{0};
         std::string target_file_;
         std::unique_ptr<lufu::WavSink> sink_;
         rack::VUMeter meter_left_;
@@ -179,8 +179,8 @@ namespace lufu
         addChild(time_label);
         module_->set_recording_time_label(time_label);
 
-        addInput(createInput<PJ301MPort>(Vec(10, 310), module_, RecorderModule::INPUT_L));
-        addInput(createInput<PJ301MPort>(Vec(50, 310), module_, RecorderModule::INPUT_R));
+        addInput(createInput<PJ301MPort>(Vec(15, 310), module_, RecorderModule::INPUT_L));
+        addInput(createInput<PJ301MPort>(Vec(51, 310), module_, RecorderModule::INPUT_R));
 
         using Green = VUSegment<rack::GreenLight>;
         using Yellow = VUSegment<rack::YellowLight>;
@@ -188,9 +188,8 @@ namespace lufu
 
         for (int i = 0; i < RecorderModule::VU_METER_LIGHTS; i++)
         {
-
-            constexpr int leftX = 18;
-            constexpr int rightX = 59;
+            constexpr int leftX = 22;
+            constexpr int rightX = 60;
 
             if (i < 10)
             {
