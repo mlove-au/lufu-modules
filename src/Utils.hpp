@@ -14,11 +14,12 @@ namespace lufu
     {
         Module * module_{ nullptr };
 
-        BaseModuleWidget(const std::string & svgPanelName)
+        template <typename... Args>
+        BaseModuleWidget(const std::string & svgPanelName, Args&&... args)
         {
             using namespace rack;
 
-            module_ = new Module();
+            module_ = new Module(std::forward<Args>(args)...);
             setModule(module_);
             box.size = rack::Vec(Width * RACK_GRID_WIDTH, RACK_GRID_HEIGHT);
 
