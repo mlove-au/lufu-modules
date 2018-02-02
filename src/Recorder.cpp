@@ -57,7 +57,8 @@ namespace lufu
         RecorderModule()
             : rack::Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS)
         {
-            meter_.dBInterval = 3;
+            meter_left_.dBInterval = 3;
+            meter_right_.dBInterval = 3;
         }
 
         void set_recording_time_label(rack::Label * label)
@@ -71,18 +72,15 @@ namespace lufu
             std::cout << "Saving to filename " << target_file_ << "\n";
         }
 
-        void vu_lights(float left, float right)
+        void update_vu_lights(float left, float right)
         {
-            meter_.setValue(left / 5.0);
-            for (int l = 0; l < VU_METER_LIGHTS; l++)
-            {
-                lights[l + VU_METER_LEFT_1].setBrightnessSmooth(meter_.getBrightness(VU_METER_LIGHTS - l));
-            }
+            meter_left_.setValue(left / 5.0);
+            meter_right_.setValue(right / 5.0);
 
-            meter_.setValue(right / 5.0);
             for (int l = 0; l < VU_METER_LIGHTS; l++)
             {
-                lights[l + VU_METER_RIGHT_1].setBrightnessSmooth(meter_.getBrightness(VU_METER_LIGHTS - l));
+                lights[l + VU_METER_LEFT_1].setBrightnessSmooth(meter_left_.getBrightness(VU_METER_LIGHTS - l));
+                lights[l + VU_METER_RIGHT_1].setBrightnessSmooth(meter_right_.getBrightness(VU_METER_LIGHTS - l));
             }
         }
 
@@ -93,19 +91,22 @@ namespace lufu
 
         void update_recording_time()
         { 
-            if (!is_recording())    
+            if (ticks_ % 44100 == 0)
             {
-                recording_time_label_->text = "00:00:00";
-            }
-            else if (ticks_ % 44100 == 0)
-            {
-                char time_str_[9];
-                const int sec = recording_seconds_ % 60;
-                const int min =  (recording_seconds_ / 60) % 60;
-                const int hour = (recording_seconds_ / (60 * 60)) % 24;
-                sprintf(time_str_, "%02d:%02d:%02d", hour, min, sec);
-                recording_time_label_->text.assign(time_str_);
-                recording_seconds_++;
+                if (!is_recording())
+                {
+                    recording_time_label_->text = "00:00:00";
+                }
+                else
+                {
+                    char time_str_[9];
+                    const int sec = recording_seconds_ % 60;
+                    const int min = (recording_seconds_ / 60) % 60;
+                    const int hour = (recording_seconds_ / (60 * 60)) % 24;
+                    sprintf(time_str_, "%02d:%02d:%02d", hour, min, sec);
+                    recording_time_label_->text.assign(time_str_);
+                    recording_seconds_++;
+                }
             }
         }
 
@@ -114,8 +115,10 @@ namespace lufu
             float left = inputs[INPUT_L].active ? inputs[INPUT_L].value : 0.0;
             float right = inputs[INPUT_R].active ? inputs[INPUT_R].value : 0.0;
 
-            vu_lights(left, right);
+            update_vu_lights(left, right);
             update_recording_time();
+            
+            ticks_++;
             // Switched off.
             if (target_file_.empty() || !params[RECORD_STOP_BUTTON].value)
             {
@@ -133,7 +136,7 @@ namespace lufu
             }
 
             sink_->push_samples(left, right);
-            ticks_++;
+            
         }
 
     private:
@@ -142,7 +145,8 @@ namespace lufu
         uint32_t recording_seconds_{0};
         std::string target_file_;
         std::unique_ptr<lufu::WavSink> sink_;
-        rack::VUMeter meter_;
+        rack::VUMeter meter_left_;
+        rack::VUMeter meter_right_;
     };
 
 
