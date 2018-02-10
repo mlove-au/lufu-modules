@@ -5,6 +5,7 @@
 #include "DeltaWave.hpp"
 #include "Repeater.hpp"
 #include "Recorder.hpp"
+#include "Risset.hpp"
 
 namespace lufu
 {
@@ -25,4 +26,6 @@ void init(rack::Plugin* p)
     p->addModel(rack::createModel<lufu::DeltaWaveWidget>(SLUG, "Delta", "Delta", rack::UTILITY_TAG));
     p->addModel(rack::createModel<lufu::RepeaterWidget>(SLUG, "Repeater", "Repeater", rack::SAMPLER_TAG));
     p->addModel(rack::createModel<lufu::RecorderWidget>(SLUG, "Recorder", "Recorder", rack::SAMPLER_TAG));
+
+    p->addModel(rack::createModel<lufu::RissetWidget>(SLUG, "Risset", "Risset", rack::OSCILLATOR_TAG));
 }

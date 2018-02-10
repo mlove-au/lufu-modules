@@ -139,9 +139,6 @@ namespace lufu
         }
     };
 
-    extern rack::Plugin* plugin;
-
-
     struct RepeaterWidget : public lufu::BaseModuleWidget<Repeater>
     {
 
