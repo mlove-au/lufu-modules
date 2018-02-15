@@ -43,7 +43,7 @@ public:
         {
             s = -32768;
         }
-        return int16_t(s);
+        return static_cast<int>(s);
     }
 
     void write(const WavBuffer & buffer)
@@ -170,7 +170,9 @@ void WavSink::writer_loop()
 {
     while (running_)
     {
-        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        // not ideal as this will block the Rack thread for 200msec when turning off.
+        // replace with condition variable
+        std::this_thread::sleep_for(std::chrono::milliseconds(200));
         {
             std::lock_guard<std::mutex> lock(buffer_mutex_);
             std::swap(input_buffer_, write_buffer_);

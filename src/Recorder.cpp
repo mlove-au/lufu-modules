@@ -7,19 +7,30 @@
 #include "dsp/vumeter.hpp"
 #include <stdio.h>
 #include <chrono>
+#include "components.hpp"
+
 
 namespace lufu
 {
-
-    template <typename Light, size_t Radius=8>
+    template <typename Light>
     struct VUSegment : public Light
     {
-        VUSegment() : Light()
+        VUSegment(int radius = 8) : Light()
         {
-            this->box.size = rack::Vec(Radius, Radius);
+            this->box.size = rack::Vec(radius, radius);
         }
     };
 
+    struct RecordingStateLight : public rack::ModuleLightWidget
+    {
+        RecordingStateLight()
+        {
+            this->box.size = rack::Vec(15, 15);
+            addBaseColor(nvgRGBAf(1.0, 1.0, 0.0, 1.0)); // yellow
+            addBaseColor(nvgRGBAf(0.0, 1.0, 0.0, 1.0)); // green  
+            addBaseColor(nvgRGBAf(1.0, 0.0, 0.0, 1.0)); // red
+        }
+    };
 
     class RecorderModule : public rack::Module
     {
@@ -46,6 +57,9 @@ namespace lufu
 
         enum LightIds
         {
+            RECORDING_NO_FILE,
+            RECORDING_READY,
+            RECORDING_RUNNING,
             VU_METER_LEFT_1,
             VU_METER_LEFT_END = VU_METER_LEFT_1 + VU_METER_LIGHTS,
             VU_METER_RIGHT_1,
@@ -59,11 +73,24 @@ namespace lufu
         {
             meter_left_.dBInterval = 3;
             meter_right_.dBInterval = 3;
+            sample_rate_ = rack::engineGetSampleRate();
+
+            lights[RECORDING_NO_FILE].setBrightness(1.0);
+            lights[RECORDING_READY].setBrightness(1.0);
+
         }
 
         void set_recording_time_label(rack::Label * label)
         {
             recording_time_label_ = label;
+        }
+
+        void onSampleRateChange() override
+        {
+            if (sample_rate_ != rack::engineGetSampleRate())
+            {
+                std::cerr << "Whoa! Sample rate changed during recording!\n";
+            }
         }
 
         void on_set_target_file(std::string path)
@@ -74,15 +101,13 @@ namespace lufu
 
         void update_vu_lights(float left, float right)
         {
-            {
-                meter_left_.setValue(left / 5.0);
-                meter_right_.setValue(right / 5.0);
+            meter_left_.setValue(left / 5.0);
+            meter_right_.setValue(right / 5.0);
 
-                for (int l = 0; l < VU_METER_LIGHTS; l++)
-                {
-                    lights[l + VU_METER_LEFT_1].setBrightnessSmooth(meter_left_.getBrightness(VU_METER_LIGHTS - l));
-                    lights[l + VU_METER_RIGHT_1].setBrightnessSmooth(meter_right_.getBrightness(VU_METER_LIGHTS - l));
-                }
+            for (int l = 0; l < VU_METER_LIGHTS; l++)
+            {
+                lights[l + VU_METER_LEFT_1].setBrightnessSmooth(meter_left_.getBrightness(VU_METER_LIGHTS - l));
+                lights[l + VU_METER_RIGHT_1].setBrightnessSmooth(meter_right_.getBrightness(VU_METER_LIGHTS - l));
             }
         }
 
@@ -91,9 +116,38 @@ namespace lufu
             return sink_ != nullptr;
         }
 
+
+        void update_recording_state()
+        {
+            lights[RECORDING_RUNNING].value = 0.0;
+            lights[RECORDING_NO_FILE].value = 0.0;
+            lights[RECORDING_READY].value = 0.0;
+            
+            if (is_recording())
+            {
+                const auto brightness = ticks_ % sample_rate_ > sample_rate_ / 2 ? 0.25 : 1.0;
+                lights[RECORDING_RUNNING].value = 1.0;
+                lights[RECORDING_RUNNING].setBrightness(brightness);
+            }
+            else if (target_file_.empty())
+            {
+                lights[RECORDING_NO_FILE].value = 1.0;
+            }
+            else
+            {
+                lights[RECORDING_READY].value = 1.0;
+            }
+        }
+
+
         void update_recording_time()
-        { 
-            if (ticks_ % 44100 == 0)
+        {
+            if (!recording_time_label_)
+            {
+                return;
+            }
+
+            if (ticks_ % sample_rate_ == 0)
             {
                 if (!is_recording())
                 {
@@ -119,8 +173,10 @@ namespace lufu
 
             update_vu_lights(left, right);
             update_recording_time();
-            
+            update_recording_state();
+
             ticks_++;
+
             // Switched off.
             if (target_file_.empty() || !params[RECORD_STOP_BUTTON].value)
             {
@@ -130,23 +186,24 @@ namespace lufu
                 }
                 return;
             }
-            
+
             if (!sink_)
             {
-                sink_ = std::unique_ptr<WavSink>(new WavSink(target_file_, 44100));
+                sink_ = std::unique_ptr<WavSink>(new WavSink(target_file_, sample_rate_));
                 recording_seconds_ = 0;
             }
             sink_->push_samples(left, right);
         }
 
     private:
-        rack::Label * recording_time_label_{nullptr};
-        uint64_t ticks_{0};
-        uint64_t recording_seconds_{0};
+        rack::Label * recording_time_label_{ nullptr };
+        uint64_t ticks_{ 0 };
+        uint64_t recording_seconds_{ 0 };
         std::string target_file_;
         std::unique_ptr<lufu::WavSink> sink_;
         rack::VUMeter meter_left_;
         rack::VUMeter meter_right_;
+        int32_t sample_rate_;
     };
 
 
@@ -171,16 +228,17 @@ namespace lufu
             this->module_->on_set_target_file(path);
         }, OSDIALOG_SAVE);
 
-        open_file->box.pos = Vec(70, 96);
-        center_horiz(*this, *open_file);
+        open_file->box.pos = Vec(25, 96);
         addChild(open_file);
 
-        auto time_label = createLabel(Vec(10, 115), "00:00:00");
+        addChild(createLight<RecordingStateLight>(Vec(56, 96), module_, RecorderModule::RECORDING_NO_FILE));
+
+        auto time_label = createLabel(Vec(15, 115), "00:00:00");
         addChild(time_label);
         module_->set_recording_time_label(time_label);
 
-        addInput(createInput<PJ301MPort>(Vec(15, 310), module_, RecorderModule::INPUT_L));
-        addInput(createInput<PJ301MPort>(Vec(51, 310), module_, RecorderModule::INPUT_R));
+        addInput(createInput<PJ301MPort>(Vec(17, 310), module_, RecorderModule::INPUT_L));
+        addInput(createInput<PJ301MPort>(Vec(52, 310), module_, RecorderModule::INPUT_R));
 
         using Green = VUSegment<rack::GreenLight>;
         using Yellow = VUSegment<rack::YellowLight>;
@@ -188,8 +246,8 @@ namespace lufu
 
         for (int i = 0; i < RecorderModule::VU_METER_LIGHTS; i++)
         {
-            constexpr int leftX = 22;
-            constexpr int rightX = 60;
+            const int leftX = 25;
+            const int rightX = 60;
 
             if (i < 10)
             {
