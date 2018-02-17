@@ -8,9 +8,15 @@ Currently builds against __Rack v0.5.1.__
 
 ## How to build
 
+
 * Clone the repo into the Rack plugins directory.
 ```
 git clone https://github.com/mlove-au/lufu-modules && cd lufu-modules
+```
+
+* Checkout the branch matching your Rack version, e.g.
+```
+git checkout v0.5.x
 ```
 
 * Update submodules
