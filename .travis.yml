@@ -1,20 +1,53 @@
 language: cpp
 dist: trusty
+cache: ccache
+
+before_script:
+    - pwd
+    - ls -lart
+    - mkdir ../build && cd ../build 
+    - |
+      if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
+        mkdir -p external/cmake
+        pushd external/cmake
+        wget https://cmake.org/files/v3.8/cmake-3.8.0-Linux-x86_64.sh
+        chmod +x cmake-*-Linux-x86_64.sh
+        ./cmake-*-Linux-x86_64.sh --exclude-subdir --skip-license
+        export PATH="${PWD}/bin:$PATH"
+        popd
+      else
+        if ! brew ls --version cmake &>/dev/null; then brew update; brew install cmake; fi
+        brew install ccache
+        export PATH="/usr/local/opt/ccache/libexec:$PATH"
+      fi
+    - git clone https://github.com/VCVRack/Rack && cd Rack && git checkout v0.5.1
+    - ls -lart ../
+    - ls -lart ../../
+    - cp -r ../../lufu-modules ./plugins
+    - find .
 
 matrix:
     include:
-     
     - os: linux
-        script:      
-            - echo `ls`
-            - echo `which cmake` 
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-5 libgtk2.0-dev xorg-dev libglu1-mesa-dev libasound2-dev
+      script:      
+          - git submodule update --init --recursive
+          - export CC=gcc-5 CXX=g++-5
+          - make dep > /dev/null && make
+          - cd plugins/lufu-modules && make && make dist VERSION=v0.5.1
 
-    - os: 
-        osx_image: xcode7.3
-        script:      
-            - echo `ls`
-            - echo `which cmake` 
-
-
+    - os: osx
+      osx_image: xcode7.3
+      script:      
+          - ls -lart ~
+          - git submodule update --init --recursive
+          - make dep > /dev/null && make
+          - cd plugins/lufu-modules && make && make dist VERSION=v0.5.1
+      
 
 
