@@ -19,8 +19,10 @@ include ../../plugin.mk
 run:
 	make -C ../../ run
 # Convenience target for including files in the distributable release
-DIST_NAME = Multiclock
+DIST_NAME = lufu-modules
+
 .PHONY: dist
+
 dist: all
 ifndef VERSION
 	$(error VERSION must be defined when making distributables)
