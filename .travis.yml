@@ -1,20 +1,58 @@
 language: cpp
 dist: trusty
-
+cache: ccache
+before_script:
+- pwd
+- ls -lart
+- mkdir ../build && cd ../build
+- |
+  if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
+    mkdir -p external/cmake
+    pushd external/cmake
+    wget https://cmake.org/files/v3.8/cmake-3.8.0-Linux-x86_64.sh
+    chmod +x cmake-*-Linux-x86_64.sh
+    ./cmake-*-Linux-x86_64.sh --exclude-subdir --skip-license
+    export PATH="${PWD}/bin:$PATH"
+    popd
+  else
+    if ! brew ls --version cmake &>/dev/null; then brew update; brew install cmake; fi
+    brew install ccache
+    export PATH="/usr/local/opt/ccache/libexec:$PATH"
+  fi
+- git clone https://github.com/VCVRack/Rack && cd Rack && git checkout v0.5.1
+- ls -lart ../
+- ls -lart ../../
+- cp -r ../../lufu-modules ./plugins
+- find .
 matrix:
-    include:
-     
-    - os: linux
-      script:      
-          - echo `ls`
-          - echo `which cmake` 
-
-    - os: osx
-      osx_image: xcode7.3
-      script:      
-          - echo `ls`
-          - echo `which cmake` 
-
-
-
-
+  include:
+  - os: linux
+    addons:
+      apt:
+        sources:
+        - ubuntu-toolchain-r-test
+        packages:
+        - g++-5 libgtk2.0-dev xorg-dev libglu1-mesa-dev libasound2-dev
+    script:
+    - git submodule update --init --recursive
+    - export CC=gcc-5 CXX=g++-5
+    - make dep > /dev/null && make
+    - cd plugins/lufu-modules && make && make dist VERSION=v0.5.1
+  - os: osx
+    osx_image: xcode7.3
+    script:
+    - ls -lart ~
+    - git submodule update --init --recursive
+    - make dep > /dev/null && make
+    - cd plugins/lufu-modules && make && make dist VERSION=v0.5.1
+    - find ~
+    - find .
+    - pwd
+deploy:
+  provider: releases
+  api_key:
+    secure: VRTjpu9ZK3xeHFXi8FlxIAoG0261Zw+P1waz6bBLj+LDcIQ+c+A0VdxDnTlbOmIY06QxKTXTNy3snLuEaNQKc1tfUXZZxpZufZFfD71CKw8Pq/SQYwF6tZdV2FPliZgZG10VGwHwD+dX3d8qwUG7mx14x4UwIyg7Up7AGHzsfxluKN3S7W3U0lUmHpU3jr3ZD7frxzJR65/mGffu2jXKvmVc0ZjwzDlKRXG3L6vU/BkOAY3UkzIlyQ7G2X/4J1/K6wJqiG8wDx8rp4JLP8HrAKJTGb4FkMEOucNu+EUAcUTu5bwSykH7V3OM1Fw/c0OojM5hzHmi5pjo/c9TRyDtm1Z/Y1z6xqL1pYThjd42FuHv4W9bnjd+C6RwixY9uzok696cWZ3txONik8Wk/3o5Aozp0Lw5kI14MY07FQ0bPQqvvxar9aeqQTj1fzuxDky535+uRW5sXr6Nop6FE7/neTg+bncuLFVOJfXfOjp6KTTlfpWgplK++IybGqQLAUcrn8b2fLQILS/s5Fg6Rv/Dt6/vX34GiD/RjxWH3gwCt0Jhl5mfUP4NN7hwQn/QGixS4VeBQ4/ggVduGmyRps5NvvsvgpmELU5bclxlc4u6nncVnrJSqbDz/4NFfXs2UOxlDEWIGXMVS84Y4SwXoYcpxUpxHZG5qORXCyyIvfQ+BBE=
+  file: build/*.zip
+  on:
+    repo: mlove-au/lufu-modules
+    branch: travis-osx-builds

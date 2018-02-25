@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include <chrono>
 #include "components.hpp"
-
+#include <functional>
 
 namespace lufu
 {
