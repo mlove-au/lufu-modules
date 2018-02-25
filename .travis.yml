@@ -5,15 +5,15 @@ matrix:
     include:
      
     - os: linux
-        script:      
-            - echo `ls`
-            - echo `which cmake` 
+      script:      
+          - echo `ls`
+          - echo `which cmake` 
 
-    - os: 
-        osx_image: xcode7.3
-        script:      
-            - echo `ls`
-            - echo `which cmake` 
+    - os: osx
+      osx_image: xcode7.3
+      script:      
+          - echo `ls`
+          - echo `which cmake` 
 
 
 
