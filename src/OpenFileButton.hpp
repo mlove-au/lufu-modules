@@ -2,6 +2,7 @@
 
 #include "../ext/osdialog/osdialog.h"
 #include "rack.hpp"
+#include <functional>
 #include <iostream>
 
 using namespace rack;
