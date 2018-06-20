@@ -19,7 +19,7 @@ before_script:
     brew install ccache
     export PATH="/usr/local/opt/ccache/libexec:$PATH"
   fi
-- git clone https://github.com/VCVRack/Rack && cd Rack && git checkout v0.5.1
+- git clone https://github.com/VCVRack/Rack && cd Rack && git checkout v0.6
 - ls -lart ../
 - ls -lart ../../
 - cp -r ../../lufu-modules ./plugins
@@ -37,14 +37,14 @@ matrix:
     - git submodule update --init --recursive
     - export CC=gcc-5 CXX=g++-5
     - make dep > /dev/null && make
-    - cd plugins/lufu-modules && make && make dist VERSION=v0.5.1
+    - cd plugins/lufu-modules && make && make dist 
   - os: osx
     osx_image: xcode7.3
     script:
     - ls -lart ~
     - git submodule update --init --recursive
     - make dep > /dev/null && make
-    - cd plugins/lufu-modules && make && make dist VERSION=v0.5.1
+    - cd plugins/lufu-modules && make && make dist 
     - pwd
 deploy:
   provider: releases
