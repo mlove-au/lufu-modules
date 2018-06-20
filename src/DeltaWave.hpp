@@ -97,9 +97,9 @@ namespace lufu
         DeltaWaveWidget()
             : BaseModuleWidget("res/Delta.svg")
         {     
-            addChild(createParam<rack::NKK>(Vec(32, 48), module_, DeltaWaveModule::ON_OFF_PARAM, 0.0, 1.0, 1.0));
-            addInput(createInput<PJ301MPort>(Vec(33, 163), module_, DeltaWaveModule::INPUT_1));
-            addOutput(createOutput<CL1362Port>(Vec(30, 253), module_, DeltaWaveModule::CLOCK_OUTPUT));
+            addChild(createParam<rack::NKK>(Vec(32, 48), module, DeltaWaveModule::ON_OFF_PARAM, 0.0, 1.0, 1.0));
+            addInput(createInput<PJ301MPort>(Vec(33, 163), module, DeltaWaveModule::INPUT_1));
+            addOutput(createOutput<CL1362Port>(Vec(30, 253), module, DeltaWaveModule::CLOCK_OUTPUT));
         }
     };
 

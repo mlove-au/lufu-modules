@@ -8,7 +8,7 @@ struct Clock
     Clock()
     : bps_(0.0)
     {
-        clock_trigger_1_.setThresholds(1.0, 1.0);
+        
     }
 
     void tick(double dt)

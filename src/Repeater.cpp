@@ -1,6 +1,6 @@
 
 #include "Repeater.hpp"
-#include "../ext/osdialog/osdialog.h"
+#include "osdialog.h"
 #include "DiscreteKnob.hpp"
 #include "LabelledKnob.hpp"
 #include "OpenFileButton.hpp"
@@ -146,19 +146,19 @@ namespace lufu
         : BaseModuleWidget("res/Repeater.svg")
     {
 
-        addChild(createParam<rack::NKK>(Vec(32, 48), module_, Repeater::ON_OFF_PARAM, 0.0, 1.0, 1.0));
+        addChild(createParam<rack::NKK>(Vec(32, 48), module, Repeater::ON_OFF_PARAM, 0.0, 1.0, 1.0));
 
         auto open_file = new OpenFileButton(
             [this](const std::string& path)
         {
-            this->module_->load_sample(path);
+            this->getModule()->load_sample(path);
         });
         open_file->box.pos = Vec(40, 98);
         addChild(open_file);
         
         using SpeedKnob = LabelledKnob<rack::RoundBlackKnob>;
 
-        auto playback_speed = dynamic_cast<SpeedKnob*>(createParam<SpeedKnob>(Vec(28, 140), module_, Repeater::SPEED_PARAM, -2.0, 2.0, 1.0));
+        auto playback_speed = dynamic_cast<SpeedKnob*>(createParam<SpeedKnob>(Vec(28, 140), module, Repeater::SPEED_PARAM, -2.0, 2.0, 1.0));
         addParam(playback_speed);
 
         auto l = createLabel<Label>(Vec(3, 180), "Speed");
@@ -166,17 +166,17 @@ namespace lufu
         playback_speed->setLabel(l, [](float v) { return std::string("Speed " + to_string_with_precision(v, 3)); });
 
 
-        addInput(createInput<PJ301MPort>(Vec(15, 203), module_, Repeater::SPEED_CV_AMOUNT));
-        addParam(createParam<ReallySmallBlackKnob>(Vec(52, 205), module_, Repeater::SPEED_CV_DEPTH, 0.0, 1.0, 1.0));
+        addInput(createInput<PJ301MPort>(Vec(15, 203), module, Repeater::SPEED_CV_AMOUNT));
+        addParam(createParam<ReallySmallBlackKnob>(Vec(52, 205), module, Repeater::SPEED_CV_DEPTH, 0.0, 1.0, 1.0));
         addChild(createLabel(Vec(7, 228), "Speed Mod"));
 
-        addInput(createInput<PJ301MPort>(Vec(33, 260), module_, Repeater::RESTART_TRIGGER));
+        addInput(createInput<PJ301MPort>(Vec(33, 260), module, Repeater::RESTART_TRIGGER));
         addChild(createLabel(Vec(24, 285), "Sync"));
 
-        addOutput(createOutput<CL1362Port>(Vec(10, 310), module_, Repeater::AUDIO_OUTPUT_L));
+        addOutput(createOutput<CL1362Port>(Vec(10, 310), module, Repeater::AUDIO_OUTPUT_L));
 
 
-        addOutput(createOutput<CL1362Port>(Vec(50, 310), module_, Repeater::AUDIO_OUTPUT_R));
+        addOutput(createOutput<CL1362Port>(Vec(50, 310), module, Repeater::AUDIO_OUTPUT_R));
 
     }
 }

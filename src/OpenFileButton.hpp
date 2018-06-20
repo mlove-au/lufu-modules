@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../ext/osdialog/osdialog.h"
+#include "osdialog.h"
 #include "rack.hpp"
 #include <functional>
 #include <iostream>
@@ -9,7 +9,7 @@ using namespace rack;
 
 namespace lufu
 {
-    class OpenFileButton : public rack::SVGSwitch, rack::MomentarySwitch
+    class OpenFileButton :  public rack::SVGSwitch, rack::MomentarySwitch
     {
     public:
         using Callback = std::function<void(const std::string &)>;
@@ -28,8 +28,7 @@ namespace lufu
         {
             if (value == 1.0)
             {
-                std::string lastPath;
-                std::string dir = lastPath.empty() ? assetLocal("") : extractDirectory("C://");
+                std::string dir = assetLocal("");
 
                 char* path = osdialog_file(action_, dir.c_str(), NULL, NULL);
                 if (path && callback_)

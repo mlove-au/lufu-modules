@@ -7,7 +7,7 @@
 #include "dsp/vumeter.hpp"
 #include <stdio.h>
 #include <chrono>
-#include "components.hpp"
+#include "componentLibrary.hpp"
 #include <functional>
 
 namespace lufu
@@ -219,26 +219,26 @@ namespace lufu
     RecorderWidget::RecorderWidget()
         : BaseModuleWidget("res/Recorder.svg")
     {
-        auto rec = createParam<rack::NKK>(Vec(32, 48), module_, RecorderModule::RECORD_STOP_BUTTON, 0.0, 1.0, 1.0);
+        auto rec = createParam<rack::NKK>(Vec(32, 48), module, RecorderModule::RECORD_STOP_BUTTON, 0.0, 1.0, 1.0);
         center_horiz(*this, *rec);
         addParam(rec);
 
         auto open_file = new OpenFileButton([this](const std::string& path)
         {
-            this->module_->on_set_target_file(path);
+            this->getModule()->on_set_target_file(path);
         }, OSDIALOG_SAVE);
 
         open_file->box.pos = Vec(25, 96);
         addChild(open_file);
 
-        addChild(createLight<RecordingStateLight>(Vec(56, 96), module_, RecorderModule::RECORDING_NO_FILE));
+        addChild(createLight<RecordingStateLight>(Vec(56, 96), module, RecorderModule::RECORDING_NO_FILE));
 
         auto time_label = createLabel(Vec(15, 115), "00:00:00");
         addChild(time_label);
-        module_->set_recording_time_label(time_label);
+        getModule()->set_recording_time_label(time_label);
 
-        addInput(createInput<PJ301MPort>(Vec(17, 310), module_, RecorderModule::INPUT_L));
-        addInput(createInput<PJ301MPort>(Vec(52, 310), module_, RecorderModule::INPUT_R));
+        addInput(createInput<PJ301MPort>(Vec(17, 310), module, RecorderModule::INPUT_L));
+        addInput(createInput<PJ301MPort>(Vec(52, 310), module, RecorderModule::INPUT_R));
 
         using Green = VUSegment<rack::GreenLight>;
         using Yellow = VUSegment<rack::YellowLight>;
@@ -251,20 +251,20 @@ namespace lufu
 
             if (i < 10)
             {
-                addChild(createLight<Green>(Vec(leftX, 290 - (i * 10)), module_, RecorderModule::VU_METER_LEFT_1 + i));
-                addChild(createLight<Green>(Vec(rightX, 290 - (i * 10)), module_, RecorderModule::VU_METER_RIGHT_1 + i));
+                addChild(createLight<Green>(Vec(leftX, 290 - (i * 10)), module, RecorderModule::VU_METER_LEFT_1 + i));
+                addChild(createLight<Green>(Vec(rightX, 290 - (i * 10)), module, RecorderModule::VU_METER_RIGHT_1 + i));
             }
 
             if (i >= 10 && i < 14)
             {
-                addChild(createLight<Yellow>(Vec(leftX, 290 - (i * 10)), module_, RecorderModule::VU_METER_LEFT_1 + i));
-                addChild(createLight<Yellow>(Vec(rightX, 290 - (i * 10)), module_, RecorderModule::VU_METER_RIGHT_1 + i));
+                addChild(createLight<Yellow>(Vec(leftX, 290 - (i * 10)), module, RecorderModule::VU_METER_LEFT_1 + i));
+                addChild(createLight<Yellow>(Vec(rightX, 290 - (i * 10)), module, RecorderModule::VU_METER_RIGHT_1 + i));
             }
 
             if (i >= 14)
             {
-                addChild(createLight<Red>(Vec(leftX, 290 - (i * 10)), module_, RecorderModule::VU_METER_LEFT_1 + i));
-                addChild(createLight<Red>(Vec(rightX, 290 - (i * 10)), module_, RecorderModule::VU_METER_RIGHT_1 + i));
+                addChild(createLight<Red>(Vec(leftX, 290 - (i * 10)), module, RecorderModule::VU_METER_LEFT_1 + i));
+                addChild(createLight<Red>(Vec(rightX, 290 - (i * 10)), module, RecorderModule::VU_METER_RIGHT_1 + i));
             }
 
         }

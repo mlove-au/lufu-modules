@@ -12,15 +12,17 @@ namespace lufu
     template <typename Module, size_t Width=6>
     struct BaseModuleWidget : public rack::ModuleWidget
     {
-        Module * module_{ nullptr };
+        Module * getModule()
+        {
+            return static_cast<Module *>(this->module);
+        }
 
         template <typename... Args>
         BaseModuleWidget(const std::string & svgPanelName, Args&&... args)
+            : rack::ModuleWidget(new Module(std::forward<Args>(args)...))
         {
             using namespace rack;
 
-            module_ = new Module(std::forward<Args>(args)...);
-            setModule(module_);
             box.size = rack::Vec(Width * RACK_GRID_WIDTH, RACK_GRID_HEIGHT);
 
             auto panel = new rack::SVGPanel();
