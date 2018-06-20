@@ -1,32 +1,23 @@
 #pragma once
 
 #include "dsp/digital.hpp"
+#include "util/math.hpp"    
 #include <array>
 
 struct Clock
 {
-    Clock()
-    : bps_(0.0)
-    {
-        
-    }
-
     void tick(double dt)
     {
         const auto inc = dt * bps_;
         phase_ += inc;
 
-        if (clock_trigger_1_.process(phase_))
+        if ( phase_ >= 1.0)
         {
             clock_1_.trigger(1e-3);
+            phase_ -= 1.0;
         }
 
         t1_ = clock_1_.process(dt);
-
-        if (phase_ >= 1.0)
-        {
-            phase_ -= 1.0;
-        }
     }
 
     void set_bpm(double bpm)
@@ -40,9 +31,8 @@ struct Clock
     };
 
     bool t1_{false};
-    rack::SchmittTrigger clock_trigger_1_;
     rack::PulseGenerator clock_1_;
-    double bps_{0.0};
+    double bps_{120.0};
     double phase_{0.0};
 };
 
