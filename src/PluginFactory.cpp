@@ -1,10 +1,11 @@
 #include <plugin.hpp>
 #include <rack.hpp>
-
+#include <string>
 #include "Multiclock.hpp"
 #include "DeltaWave.hpp"
 #include "Repeater.hpp"
 #include "Recorder.hpp"
+
 
 namespace lufu
 {
@@ -13,16 +14,14 @@ namespace lufu
 
 void init(rack::Plugin* p)
 {
-    const std::string SLUG("lufu");
+    std::string SLUG("lufu");
     lufu::plugin = p;
     p->slug = SLUG;
 #ifdef VERSION
     p->version = TOSTRING(VERSION);
 #endif
- 
-
-    p->addModel(rack::createModel<lufu::MultiClockModuleWidget>(SLUG, "Multiclock", "Multiclock", rack::UTILITY_TAG));
-    p->addModel(rack::createModel<lufu::DeltaWaveWidget>(SLUG, "Delta", "Delta", rack::UTILITY_TAG));
-    p->addModel(rack::createModel<lufu::RepeaterWidget>(SLUG, "Repeater", "Repeater", rack::SAMPLER_TAG));
-    p->addModel(rack::createModel<lufu::RecorderWidget>(SLUG, "Recorder", "Recorder", rack::SAMPLER_TAG));
+    p->addModel(lufu::g_multiclockModel);
+    //p->addModel(rack::createModel<lufu::DeltaWaveWidget>(SLUG, std::string("Delta"), std::string("Delta"), rack::UTILITY_TAG));
+   // p->addModel(rack::createModel<lufu::RepeaterWidget>(SLUG, std::string("Repeater"), std::string("Repeater"), rack::SAMPLER_TAG));
+   // p->addModel(rack::createModel<lufu::RecorderWidget>(SLUG, std::string("Recorder"), std::string("Recorder"), rack::SAMPLER_TAG));
 }

@@ -5,9 +5,12 @@
 namespace lufu
 {
     class MultiClockModule;
+
     class MultiClockModuleWidget : public lufu::BaseModuleWidget<MultiClockModule>
     {
     public:
-        MultiClockModuleWidget();
+        MultiClockModuleWidget(MultiClockModule * module);
     };
+
+    extern rack::Model * g_multiclockModel;
 }

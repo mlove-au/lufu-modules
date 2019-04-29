@@ -94,8 +94,8 @@ namespace lufu
 
     struct DeltaWaveWidget : lufu::BaseModuleWidget<DeltaWaveModule>
     {
-        DeltaWaveWidget()
-            : BaseModuleWidget("res/Delta.svg")
+        DeltaWaveWidget(DeltaWaveModule * module)
+            : BaseModuleWidget(module, "res/Delta.svg")
         {     
             addChild(createParam<rack::NKK>(Vec(32, 48), module, DeltaWaveModule::ON_OFF_PARAM, 0.0, 1.0, 1.0));
             addInput(createInput<PJ301MPort>(Vec(33, 163), module, DeltaWaveModule::INPUT_1));

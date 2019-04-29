@@ -9,6 +9,6 @@ namespace lufu
     class RecorderWidget : public lufu::BaseModuleWidget<RecorderModule>
     {
     public:
-        RecorderWidget();
+        RecorderWidget(RecorderModule * module);
     };
 }

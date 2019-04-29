@@ -81,8 +81,8 @@ namespace lufu
         }
     }
 
-    MultiClockModuleWidget::MultiClockModuleWidget()
-        : BaseModuleWidget("res/Clock.svg")
+    MultiClockModuleWidget::MultiClockModuleWidget(MultiClockModule * module)
+        : BaseModuleWidget(module, "res/Clock.svg")
     {
         addChild(createParam<rack::NKK>(Vec(32, 48), module, MultiClockModule::ON_OFF_PARAM, 0.0, 1.0, 1.0));
 
@@ -103,4 +103,6 @@ namespace lufu
         addOutput(createOutput<CL1362Port>(Vec(30, 305), module, MultiClockModule::OCT_CLOCK_OUTPUT));
     }
 
+    Model* g_multiclockModel = Model::create<lufu::MultiClockModule, lufu::MultiClockModuleWidget>(
+        "lufu", "Multiclock", "Multiclock", rack::UTILITY_TAG);
 }

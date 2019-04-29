@@ -18,12 +18,12 @@ namespace lufu
         }
 
         template <typename... Args>
-        BaseModuleWidget(const std::string & svgPanelName, Args&&... args)
-            : rack::ModuleWidget(new Module(std::forward<Args>(args)...))
+        BaseModuleWidget(Module * module,  const std::string & svgPanelName, Args&&... args)
+            : rack::ModuleWidget(module)
         {
             using namespace rack;
 
-            box.size = rack::Vec(Width * RACK_GRID_WIDTH, RACK_GRID_HEIGHT);
+            this->box.size = rack::Vec(Width * RACK_GRID_WIDTH, RACK_GRID_HEIGHT);
 
             auto panel = new rack::SVGPanel();
             panel->box.size = box.size;

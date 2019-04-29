@@ -142,8 +142,8 @@ namespace lufu
 
    
 
-    RepeaterWidget::RepeaterWidget()
-        : BaseModuleWidget("res/Repeater.svg")
+    RepeaterWidget::RepeaterWidget(Repeater * module)
+        : BaseModuleWidget(module, "res/Repeater.svg")
     {
 
         addChild(createParam<rack::NKK>(Vec(32, 48), module, Repeater::ON_OFF_PARAM, 0.0, 1.0, 1.0));

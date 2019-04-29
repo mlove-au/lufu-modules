@@ -9,6 +9,6 @@ namespace lufu
     class RepeaterWidget : public lufu::BaseModuleWidget<Repeater>
     {
         public:
-            RepeaterWidget();
+            RepeaterWidget(Repeater * module);
     };
 }

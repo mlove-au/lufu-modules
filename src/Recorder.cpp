@@ -216,8 +216,8 @@ namespace lufu
         that.box.pos.x = center - width;
     }
 
-    RecorderWidget::RecorderWidget()
-        : BaseModuleWidget("res/Recorder.svg")
+    RecorderWidget::RecorderWidget(RecorderModule * module)
+        : BaseModuleWidget(module, "res/Recorder.svg")
     {
         auto rec = createParam<rack::NKK>(Vec(32, 48), module, RecorderModule::RECORD_STOP_BUTTON, 0.0, 1.0, 1.0);
         center_horiz(*this, *rec);
